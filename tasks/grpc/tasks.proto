@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package task_processing_system.tasks;
+
+service TasksController {
+    rpc Create(TasksRequest) returns (TasksResponse) {}
+    rpc List(TasksListRequest) returns (TasksListResponse) {}
+}
+
+message TaskPayloadRequest {
+    string email = 1;
+    string subject = 2;
+    string body = 3;
+}
+
+message TaskPayloadResponse {
+    string email = 1;
+    string subject = 2;
+    string body = 3;
+}
+
+message TasksListRequest {
+}
+
+message TasksListResponse {
+    repeated TasksResponse results = 1;
+}
+
+message TasksRequest {
+    optional int32 id = 1;
+    TaskPayloadRequest data = 2;
+}
+
+message TasksResponse {
+    optional int32 id = 1;
+    TaskPayloadResponse data = 2;
+    optional string status = 3;
+    optional string created_at = 4;
+    optional string updated_at = 5;
+}
+
