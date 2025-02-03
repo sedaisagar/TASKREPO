@@ -50,8 +50,6 @@ If the Celery workers restart, they reconnect to Redis and resume picking up pen
 
 ```
 SET EMAIL_USER and EMAIL_PASS in docker-compose.yml environment
-
-![alt text](https://ibb.co/DD194zgJ)
 ```
 
 ### RUN
@@ -59,7 +57,8 @@ SET EMAIL_USER and EMAIL_PASS in docker-compose.yml environment
 docker-compose up --build -d
 ```
 
-### Lets suppose an arbitary microservice creates task for sending email by calling rpc create method
+### Lets suppose an arbitary microservice creates task for sending email by calling rpc create method 
+
 
 ### For Create Method following is payload sample
 
