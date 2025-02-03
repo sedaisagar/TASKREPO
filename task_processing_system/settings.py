@@ -1,4 +1,5 @@
 from pathlib import Path
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -18,6 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_socio_grpc",
+    "django_filters",
     "tasks",
 ]
 
@@ -52,14 +54,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "task_processing_system.wsgi.application"
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -89,8 +83,25 @@ STATIC_URL = "static/"
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+from django_socio_grpc.settings import FilterAndPaginationBehaviorOptions
+
+GRPC_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "FILTER_BEHAVIOR": FilterAndPaginationBehaviorOptions.METADATA_AND_REQUEST_STRUCT,
+}
+
+from .celery_settings import *
 
 
-# GRPC_FRAMEWORK = {
-#     "ROOT_HANDLERS_HOOK": "tasks.handlers.grpc_handlers",
-# }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": config("DATABASE_NAME", ""),
+        "USER": config("DATABASE_USER", ""),
+        "PASSWORD": config("DATABASE_PASSWORD", ""),
+        "HOST": config("DATABASE_HOST", ""),
+        "PORT": config("DATABASE_PORT", ""),
+    }
+}
+
+print(DATABASES)

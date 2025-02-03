@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package task_processing_system.tasks;
 
+import "google/protobuf/struct.proto";
+
 service TasksController {
     rpc Create(TasksRequest) returns (TasksResponse) {}
     rpc List(TasksListRequest) returns (TasksListResponse) {}
@@ -20,6 +22,7 @@ message TaskPayloadResponse {
 }
 
 message TasksListRequest {
+    optional google.protobuf.Struct _filters = 1;
 }
 
 message TasksListResponse {

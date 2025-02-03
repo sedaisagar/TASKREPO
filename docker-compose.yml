@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: task_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    container_name: redis_broker
+    restart: always
+    ports:
+      - "6379:6379"
+
+  django:
+    build: .
+    container_name: django_app
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - DATABASE_NAME=task_db
+      - DATABASE_USER=user
+      - DATABASE_PASSWORD=password
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - EMAIL_USER=
+      - EMAIL_PASS=
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    command: /wait-for-it.sh mysql:3306 --  python manage.py grpcrunaioserver --dev 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+
+  celery-worker:
+    build: .
+    container_name: celery_worker
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+      - django
+    environment:
+      - DATABASE_NAME=task_db
+      - DATABASE_USER=user
+      - DATABASE_PASSWORD=password
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - EMAIL_USER=
+      - EMAIL_PASS=
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    command: celery -A task_processor_ms worker --loglevel=info
+
+  celery-beat:
+    build: .
+    container_name: celery_beat
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+      - django
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    command: celery -A task_processor_ms beat --loglevel=info
+
+volumes:
+  mysql_data:

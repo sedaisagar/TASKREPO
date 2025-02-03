@@ -1,6 +1,8 @@
 from django.db import models
 from utils.enums import STATUSES
 
+from task_processor_ms.tasks import email_sender
+
 
 class Tasks(models.Model):
     """
@@ -19,3 +21,10 @@ class Tasks(models.Model):
 
     class Meta:
         ordering = ("-created_at",)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # add task for email sender when create
+        if self.status == "pending":
+            email_sender.delay(self.data, pk=self.pk)
