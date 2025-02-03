@@ -8,7 +8,7 @@ SECRET_KEY = "django-insecure-*82q#93+=2r2#a)7uuradfj#bgj=#%$03z9628x@pm-jl8#5ly
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 INSTALLED_APPS = [
@@ -104,4 +104,3 @@ DATABASES = {
     }
 }
 
-print(DATABASES)
